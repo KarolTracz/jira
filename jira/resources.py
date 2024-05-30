@@ -1576,6 +1576,13 @@ class RequestType(Resource):
 
 
 # Utilities
+def replace_spaces_in_keys(data: Dict[str, Any]) -> Dict[str, Any]:
+    if isinstance(data, dict):
+        return {k.replace(" ", "_"): replace_spaces_in_keys(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [replace_spaces_in_keys(elem) for elem in data]
+    else:
+        return data
 
 
 def dict2resource(
@@ -1589,6 +1596,7 @@ def dict2resource(
     if top is None:
         top = PropertyHolder()
 
+    raw = replace_spaces_in_keys(raw)
     seqs = tuple, list, set, frozenset
     for i, j in raw.items():
         if isinstance(j, dict):
